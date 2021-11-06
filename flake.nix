@@ -26,18 +26,18 @@
             hooks = {
               nix-linter = {
                 enable = true;
-                entry = mkForce "nix-linter";
+                entry = mkForce "${pkgs.nix-linter}/bin/nix-linter";
                 excludes = [ "nix/sources.nix" ];
               };
 
               nixpkgs-fmt = {
                 enable = true;
-                entry = mkForce "nixpkgs-fmt --check";
+                entry = mkForce "${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check";
               };
 
               prettier = {
                 enable = true;
-                entry = mkForce "npm run format-check";
+                entry = mkForce "${pkgs.nodejs}/bin/npm run format-check";
                 types_or = [ "json" "toml" "yaml" "ts" ];
                 excludes = [
                   "package-lock.json"
@@ -46,20 +46,20 @@
 
               eslint = {
                 enable = true;
-                entry = mkForce "npm run lint";
+                entry = mkForce "${pkgs.nodejs}/bin/npm run lint";
                 files = "\\.ts$";
               };
 
               shellcheck = {
                 enable = true;
-                entry = mkForce "shellcheck";
+                entry = mkForce "${pkgs.shellcheck}/bin/shellcheck";
                 files = "\\.sh$";
                 types_or = mkForce [ ];
               };
 
               shfmt = {
                 enable = true;
-                entry = mkForce "shfmt -i 2 -sr -d -s -l";
+                entry = mkForce "${pkgs.shfmt}/bin/shfmt -i 2 -sr -d -s -l";
                 files = "\\.sh$";
               };
             };
