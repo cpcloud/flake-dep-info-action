@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dep:
+        input:
           - name: nixpkgs
             repo: nixpkgs
             owner: NixOS
@@ -44,16 +44,16 @@ jobs:
         uses: ./
         id: test
         with:
-          dependency: ${{ matrix.dep.name }}
+          input: ${{ matrix.input.name }}
 
       - name: check owner
-        run: if [ "${{ steps.test.outputs.owner }}" != "${{ matrix.dep.owner }}" ]; then exit 1; fi
+        run: if [ "${{ steps.test.outputs.owner }}" != "${{ matrix.input.owner }}" ]; then exit 1; fi
 
       - name: check repo
-        run: if [ "${{ steps.test.outputs.repo }}" != "${{ matrix.dep.repo }}" ]; then exit 1; fi
+        run: if [ "${{ steps.test.outputs.repo }}" != "${{ matrix.input.repo }}" ]; then exit 1; fi
 
       - name: check rev
-        run: if [ "${{ steps.test.outputs.rev }}" != "${{ matrix.dep.rev }}" ]; then exit 1; fi
+        run: if [ "${{ steps.test.outputs.rev }}" != "${{ matrix.input.rev }}" ]; then exit 1; fi
   release:
     runs-on: ubuntu-latest
     concurrency: release
