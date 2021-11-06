@@ -1685,7 +1685,8 @@ const fs = __nccwpck_require__(747);
 (async function () {
     try {
         const input = core.getInput("input", { required: true });
-        const lockfile = core.getInput("lockfile", { required: false });
+        const lockfile = core.getInput("lockfile", { required: true });
+        const shortRevLength = JSON.parse(core.getInput("short-rev-length", { required: true }));
         const fileContents = fs.readFileSync(lockfile, { encoding: "utf8" });
         const lock = JSON.parse(fileContents);
         const dep = lock.nodes[input].locked;
@@ -1694,6 +1695,7 @@ const fs = __nccwpck_require__(747);
         core.setOutput("owner", dep.owner);
         core.setOutput("repo", dep.repo);
         core.setOutput("rev", dep.rev);
+        core.setOutput("short-rev", dep.rev.slice(0, shortRevLength));
     }
     catch (error) {
         core.setFailed(`Action failed with error: ${error}`); // eslint-disable-line i18n-text/no-en
