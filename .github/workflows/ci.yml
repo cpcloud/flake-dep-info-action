@@ -51,6 +51,9 @@ jobs:
 
       - name: check repo
         run: if [ "${{ steps.test.outputs.repo }}" != "${{ matrix.input.repo }}" ]; then exit 1; fi
+
+      - name: check rev
+        run: if [ -z "${{ steps.test.outputs.rev }}" ]; then exit 1; fi
   release:
     runs-on: ubuntu-latest
     concurrency: release
