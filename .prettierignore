@@ -1,0 +1,5 @@
+dist/
+lib/
+node_modules/
+.pre-commit-config.yaml
+.direnv/flake-inputs

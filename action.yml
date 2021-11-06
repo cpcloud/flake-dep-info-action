@@ -1,0 +1,21 @@
+name: "flake-dep-info-action"
+description: "Get information about flake dependencies"
+author: "Phillip Cloud"
+inputs:
+  input:
+    required: true
+    description: "The flake input whose data you want to access"
+  lockfile:
+    required: false
+    description: "The path to the flake lock file containing locked dependencies"
+    default: "flake.lock"
+outputs:
+  owner:
+    description: "The owner of the repository"
+  repo:
+    description: "The repository"
+  rev:
+    description: "Git revision of the dependency"
+runs:
+  using: "node12"
+  main: "dist/index.js"

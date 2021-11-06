@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - run: npm install
+      - run: npm run build
+      - run: npm run format-check
+      - run: npm run lint
+      - run: npm run package
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dep:
+          - name: nixpkgs
+            repo: nixpkgs
+            owner: NixOS
+
+          - name: pre-commit-hooks
+            repo: pre-commit-hooks.nix
+            owner: cachix
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: test
+        uses: ./
+        id: test
+        with:
+          dependency: ${{ matrix.dep.name }}
+
+      - name: check owner
+        run: if [ "${{ steps.test.outputs.owner }}" != "${{ matrix.dep.owner }}" ]; then exit 1; fi
+
+      - name: check repo
+        run: if [ "${{ steps.test.outputs.repo }}" != "${{ matrix.dep.repo }}" ]; then exit 1; fi
+
+      - name: check rev
+        run: if [ "${{ steps.test.outputs.rev }}" != "${{ matrix.dep.rev }}" ]; then exit 1; fi
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+    needs:
+      - build
+      - test
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: setup nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: install ci dependencies
+        run: npm ci
+
+      - name: install runtime dependencies
+        run: npm install
+
+      - name: build
+        run: npm run build
+
+      - name: package assets
+        run: npm run package
+
+      - name: release
+        run: npx semantic-release
+        env:
+          GIT_CREDENTIALS: ${{ secrets.SEMREL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

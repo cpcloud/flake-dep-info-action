@@ -1,0 +1,70 @@
+name: Update Dependencies
+on:
+  schedule:
+    - cron: "5 */6 * * *"
+  workflow_dispatch:
+jobs:
+  flake-update:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        input:
+          - nixpkgs
+          - pre-commit-hooks
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v14
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable-small
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Get current commit
+        uses: cpcloud/flake-dep-info-action@main
+        id: get_current_commit
+        with:
+          input: ${{ matrix.input }}
+
+      - name: Update ${{ matrix.input }}
+        run: nix flake lock --update-input ${{ matrix.input }}
+
+      - name: Get new commit
+        uses: cpcloud/flake-dep-info-action@main
+        id: get_new_commit
+        with:
+          dependency: ${{ matrix.input }}
+
+      - name: Get commit details for ${{ matrix.input }} changes
+        uses: cpcloud/compare-commits-action@v5.0.8
+        id: compare_commits
+        if: ${{ steps.get_current_commit.outputs.rev != steps.get_new_commit.outputs.rev }}
+        with:
+          owner: ${{ steps.get_new_commit.outputs.owner }}
+          repo: ${{ steps.get_new_commit.outputs.repo }}
+          basehead: ${{ steps.get_current_commit.outputs.rev }}...${{ steps.get_new_commit.outputs.rev }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          include-merge-commits: false
+
+      - name: Create a pull request to update ${{ matrix.input }}
+        if: ${{ steps.get_current_commit.outputs.rev != steps.get_new_commit.outputs.rev }}
+        id: create_pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "chore(deps): update ${{ matrix.input }}"
+          branch: "create-pull-request/update-${{ matrix.input }}"
+          delete-branch: true
+          author: "Phillip Ground <cpcloudbot@gmail.com>"
+          title: "chore(deps): update ${{ matrix.input }}"
+          token: ${{ secrets.PAT }}
+          body: ${{ steps.compare_commits.outputs.differences }}
+
+      - name: Set the PR to automerge
+        if: ${{ steps.create_pr.outputs.pull-request-operation == 'created' }}
+        uses: peter-evans/enable-pull-request-automerge@v1
+        with:
+          token: ${{ secrets.PAT }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          merge-method: rebase

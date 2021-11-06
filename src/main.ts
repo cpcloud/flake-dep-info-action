@@ -1,0 +1,52 @@
+import * as core from "@actions/core";
+import * as fs from "fs";
+
+interface Locked {
+  lastModified: number;
+  narHash: string;
+  owner: string;
+  repo: string;
+  rev: string;
+  type: string;
+}
+
+interface Original {
+  owner: string;
+  ref?: string;
+  repo: string;
+  type: string;
+}
+
+interface Inputs {
+  [key: string]: string;
+}
+
+interface Node {
+  locked: Locked;
+  original: Original;
+  inputs?: Inputs;
+}
+
+interface Lock {
+  nodes: { [key: string]: Node };
+  root: string;
+  version: number;
+}
+
+(async function (): Promise<void> {
+  try {
+    const input = core.getInput("input", { required: true });
+    const lockfile = core.getInput("lockfile", { required: false });
+    const fileContents = fs.readFileSync(lockfile, { encoding: "utf8" });
+    const lock: Lock = JSON.parse(fileContents);
+    const dep = lock.nodes[input].locked;
+
+    // see https://github.com/actions/toolkit/issues/777
+    // for why each call prints a newline
+    core.setOutput("owner", dep.owner);
+    core.setOutput("repo", dep.repo);
+    core.setOutput("rev", dep.rev);
+  } catch (error) {
+    core.setFailed(`Action failed with error: ${error}`); // eslint-disable-line i18n-text/no-en
+  }
+})();
