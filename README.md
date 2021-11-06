@@ -25,4 +25,6 @@ outputs:
     description: "The repository"
   rev:
     description: "Git revision of the dependency"
+  short-rev:
+    description: "Short git revision"
 ```
