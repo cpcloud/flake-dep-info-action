@@ -87,5 +87,5 @@ jobs:
       - name: release
         run: npx semantic-release
         env:
-          GIT_CREDENTIALS: ${{ secrets.SEMREL }}
+          GIT_CREDENTIALS: ${{ secrets.FLAKE_DEP_INFO_ACTION_SEMREL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -58,13 +58,13 @@ jobs:
           delete-branch: true
           author: "Phillip Ground <cpcloudbot@gmail.com>"
           title: "chore(deps): update ${{ matrix.input }}"
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GROUND_FLAKE_DEP_INFO_ACTION }}
           body: ${{ steps.compare_commits.outputs.differences }}
 
       - name: Set the PR to automerge
         if: ${{ steps.create_pr.outputs.pull-request-operation == 'created' }}
         uses: peter-evans/enable-pull-request-automerge@v1
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GROUND_FLAKE_DEP_INFO_ACTION }}
           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
           merge-method: rebase
