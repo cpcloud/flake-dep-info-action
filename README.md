@@ -13,6 +13,10 @@ inputs:
     required: false
     description: "The path to the flake lock file containing locked dependencies"
     default: "flake.lock"
+  short-rev-length:
+    required: false
+    description: "The length of the short-rev output"
+    default: "8"
 ```
 
 ## Outputs
