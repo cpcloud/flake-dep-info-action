@@ -9,6 +9,10 @@ inputs:
     required: false
     description: "The path to the flake lock file containing locked dependencies"
     default: "flake.lock"
+  short-rev-length:
+    required: false
+    description: "The length of the short-rev output"
+    default: "10"
 outputs:
   owner:
     description: "The owner of the repository"
@@ -16,6 +20,8 @@ outputs:
     description: "The repository"
   rev:
     description: "Git revision of the dependency"
+  short-rev:
+    description: "Short git revision"
 runs:
   using: "node12"
   main: "dist/index.js"
