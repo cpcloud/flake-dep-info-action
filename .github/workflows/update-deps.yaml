@@ -35,7 +35,7 @@ jobs:
         uses: cpcloud/flake-dep-info-action@main
         id: get_new_commit
         with:
-          dependency: ${{ matrix.input }}
+          input: ${{ matrix.input }}
 
       - name: Get commit details for ${{ matrix.input }} changes
         uses: cpcloud/compare-commits-action@v5.0.8
