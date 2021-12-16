@@ -79,7 +79,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          persist-credentials: false
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: setup nodejs
