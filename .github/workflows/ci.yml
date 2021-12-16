@@ -68,11 +68,19 @@ jobs:
       - build
       - test
     steps:
+      - name: Generate a GitHub token
+        uses: tibdex/github-app-token@v1
+        id: generate_token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
           persist-credentials: false
+          token: ${{ steps.generate_token.outputs.token }}
 
       - name: setup nodejs
         uses: actions/setup-node@v2
@@ -90,13 +98,6 @@ jobs:
 
       - name: package assets
         run: npm run package
-
-      - name: Generate a GitHub token
-        uses: tibdex/github-app-token@v1
-        id: generate_token
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: release
         run: npx semantic-release
