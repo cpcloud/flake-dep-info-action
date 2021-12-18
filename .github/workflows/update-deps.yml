@@ -69,6 +69,7 @@ jobs:
           title: "chore(deps): update ${{ matrix.input }}"
           token: ${{ steps.generate_token.outputs.token }}
           body: ${{ steps.compare_commits.outputs.differences }}
+          labels: dependencies,autorebase:opt-in
 
       - name: Set the PR to automerge
         if: ${{ steps.create_pr.outputs.pull-request-operation == 'created' }}
