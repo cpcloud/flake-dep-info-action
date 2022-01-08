@@ -15,11 +15,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: setup nodejs
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 16
 
@@ -41,8 +39,7 @@ jobs:
             repo: pre-commit-hooks.nix
             owner: cachix
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: test
         uses: ./
@@ -63,43 +60,30 @@ jobs:
         run: if [ -z "${{ steps.test.outputs.short-rev }}" ]; then exit 1; fi
   release:
     runs-on: ubuntu-latest
-    concurrency: release
     needs:
       - build
       - test
     steps:
-      - name: Generate a GitHub token
-        uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@v1
         id: generate_token
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
           token: ${{ steps.generate_token.outputs.token }}
 
-      - name: setup nodejs
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 16
 
-      - name: install ci dependencies
-        run: npm ci
+      - run: npm ci
+      - run: npm install
+      - run: npm run build
+      - run: npm run package
 
-      - name: install runtime dependencies
-        run: npm install
-
-      - name: build
-        run: npm run build
-
-      - name: package assets
-        run: npm run package
-
-      - name: release
-        run: npx semantic-release
+      - run: npx semantic-release
         env:
-          GIT_CREDENTIALS: ${{ steps.generate_token.outputs.token }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
