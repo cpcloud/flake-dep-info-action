@@ -12,34 +12,27 @@ jobs:
           - nixpkgs
           - pre-commit-hooks
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v16
+      - uses: cachix/install-nix-action@v16
         with:
           nix_path: nixpkgs=channel:nixos-unstable-small
           extra_nix_config: |
-            experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get current commit
-        uses: cpcloud/flake-dep-info-action@main
+      - uses: cpcloud/flake-dep-info-action@main
         id: get_current_commit
         with:
           input: ${{ matrix.input }}
 
-      - name: Update ${{ matrix.input }}
-        run: nix flake lock --update-input ${{ matrix.input }}
+      - run: nix flake lock --update-input ${{ matrix.input }}
 
-      - name: Get new commit
-        uses: cpcloud/flake-dep-info-action@main
+      - uses: cpcloud/flake-dep-info-action@main
         id: get_new_commit
         with:
           input: ${{ matrix.input }}
 
-      - name: Get commit details for ${{ matrix.input }} changes
-        uses: cpcloud/compare-commits-action@v5.0.13
+      - uses: cpcloud/compare-commits-action@v5.0.13
         id: compare_commits
         if: ${{ steps.get_current_commit.outputs.rev != steps.get_new_commit.outputs.rev }}
         with:
@@ -49,18 +42,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           include-merge-commits: false
 
-      - name: Generate a GitHub token
-        uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@v1
         if: ${{ steps.get_current_commit.outputs.rev != steps.get_new_commit.outputs.rev }}
         id: generate_token
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Create a pull request to update ${{ matrix.input }}
+      - uses: peter-evans/create-pull-request@v3
         if: ${{ steps.get_current_commit.outputs.rev != steps.get_new_commit.outputs.rev }}
         id: create_pr
-        uses: peter-evans/create-pull-request@v3
         with:
           commit-message: "chore(deps): update ${{ matrix.input }}"
           branch: "create-pull-request/update-${{ matrix.input }}"
@@ -71,9 +62,8 @@ jobs:
           body: ${{ steps.compare_commits.outputs.differences }}
           labels: dependencies,autorebase:opt-in
 
-      - name: Set the PR to automerge
+      - uses: peter-evans/enable-pull-request-automerge@v1
         if: ${{ steps.create_pr.outputs.pull-request-operation == 'created' }}
-        uses: peter-evans/enable-pull-request-automerge@v1
         with:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
