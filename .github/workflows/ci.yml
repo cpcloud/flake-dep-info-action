@@ -83,7 +83,6 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run package
-
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
