@@ -30,7 +30,7 @@
   "author": "Phillip Cloud <417981+cpcloud@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@actions/core": "1.9.1",
+    "@actions/core": "1.10.0",
     "tunnel": "0.0.6"
   },
   "devDependencies": {
