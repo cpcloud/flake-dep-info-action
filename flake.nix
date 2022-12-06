@@ -47,7 +47,6 @@
               eslint = {
                 enable = true;
                 entry = mkForce "${pkgs.nodejs}/bin/npm run lint";
-                files = "\\.ts$";
               };
 
               shellcheck = {
