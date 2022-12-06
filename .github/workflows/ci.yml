@@ -79,10 +79,13 @@ jobs:
         with:
           node-version: 16
 
-      - run: npm ci
-      - run: npm install
-      - run: npm run build
-      - run: npm run package
-      - run: npx semantic-release
+      - uses: cycjimmy/semantic-release-action@v2.7.0
+        with:
+          extra_plugins: |
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+            @semantic-release/changelog
+            @semantic-release/github
+            @semantic-release/git
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
