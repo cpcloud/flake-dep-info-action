@@ -2830,7 +2830,9 @@ const fs = __nccwpck_require__(147);
         const shortRevLength = JSON.parse(core.getInput("short-rev-length", { required: true }));
         const fileContents = fs.readFileSync(lockfile, { encoding: "utf8" });
         const lock = JSON.parse(fileContents);
-        const dep = lock.nodes[input].locked;
+        const inputs = lock.nodes.root.inputs;
+        const rawName = inputs !== undefined ? inputs[input] : input;
+        const dep = lock.nodes[rawName].locked;
         // see https://github.com/actions/toolkit/issues/777
         // for why each call prints a newline
         core.setOutput("owner", dep.owner);
