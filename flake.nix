@@ -24,20 +24,13 @@
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
             src = ./.;
             hooks = {
-              nix-linter = {
-                enable = true;
-                entry = mkForce "${pkgs.nix-linter}/bin/nix-linter";
-                excludes = [ "nix/sources.nix" ];
-              };
-
-              nixpkgs-fmt = {
-                enable = true;
-                entry = mkForce "${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check";
-              };
+              statix.enable = true;
+              nixpkgs-fmt.enable = true;
+              shellcheck.enable = true;
 
               prettier = {
                 enable = true;
-                entry = mkForce "${pkgs.nodejs}/bin/npm run format-check";
+                entry = mkForce "${pkgs.nodejs}/bin/npm run format";
                 types_or = [ "json" "toml" "yaml" "ts" ];
                 excludes = [
                   "package-lock.json"
@@ -47,13 +40,6 @@
               eslint = {
                 enable = true;
                 entry = mkForce "${pkgs.nodejs}/bin/npm run lint";
-              };
-
-              shellcheck = {
-                enable = true;
-                entry = mkForce "${pkgs.shellcheck}/bin/shellcheck";
-                files = "\\.sh$";
-                types_or = mkForce [ ];
               };
 
               shfmt = {
@@ -71,11 +57,11 @@
           buildInputs = with pkgs; [
             fd
             git
-            nix-linter
             nixpkgs-fmt
             nodejs
             shellcheck
             shfmt
+            statix
           ];
 
           # npm forces output that can't possibly be useful to stdout so redirect
