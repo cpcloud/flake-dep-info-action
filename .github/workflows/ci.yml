@@ -35,8 +35,8 @@ jobs:
             repo: nixpkgs
             owner: NixOS
 
-          - name: pre-commit-hooks
-            repo: pre-commit-hooks.nix
+          - name: git-hooks
+            repo: git-hooks.nix
             owner: cachix
     steps:
       - uses: actions/checkout@v4
