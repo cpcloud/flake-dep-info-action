@@ -1,3 +1,10 @@
+## [2.0.13](https://github.com/cpcloud/flake-dep-info-action/compare/v2.0.12...v2.0.13) (2024-11-12)
+
+
+### Bug Fixes
+
+* run with node20 ([31ed5f8](https://github.com/cpcloud/flake-dep-info-action/commit/31ed5f8598362ca5cba5813aa5e68ddc5cef5af0))
+
 ## [2.0.12](https://github.com/cpcloud/flake-dep-info-action/compare/v2.0.11...v2.0.12) (2024-10-02)
 
 ### Bug Fixes
