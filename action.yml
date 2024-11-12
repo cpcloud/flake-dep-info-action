@@ -23,5 +23,5 @@ outputs:
   short-rev:
     description: "Short git revision"
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
