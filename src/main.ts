@@ -38,7 +38,7 @@ interface Lock {
     const input = core.getInput("input", { required: true });
     const lockfile = core.getInput("lockfile", { required: true });
     const shortRevLength = JSON.parse(
-      core.getInput("short-rev-length", { required: true })
+      core.getInput("short-rev-length", { required: true }),
     );
     const fileContents = fs.readFileSync(lockfile, { encoding: "utf8" });
     const lock: Lock = JSON.parse(fileContents);
